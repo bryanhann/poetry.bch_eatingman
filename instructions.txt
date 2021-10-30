@@ -1,0 +1,27 @@
+STEP 1: DOWNLOAD
+
+wget https://proxy-01.eightytwovideoprogood.xyz/cdn01/hls/61566024dd75dfb79e39833d/7492933fc80e3a3469ce592303348e30.png
+
+------------------------------
+
+STEP 2: RENAME TO MP4
+
+mv 7492933fc80e3a3469ce592303348e30.png 7492933fc80e3a3469ce592303348e30.mp4
+
+------------------------------
+
+STEP 3: EXTRACT MP4
+
+mkvmerge --ui-language en --output ^"$$OUTPUT-1$$.mp4^" --language 0:und --compression 0:none --language 1:und --compression 1:none ^"^(^" ^"$$INPUT-1$$.mp4^" ^"^)^" --track-order 0:0,0:1
+
+------------------------------
+
+STEP 4: CONVERT TO TS
+
+ffmpeg -i $$INPUT-2$$.mp4 -c copy -bsf:v h264_mp4toannexb -f mpegts $$OUTPUT-2$$.ts
+
+------------------------------
+
+STEP 4: MERGE TO MP4
+
+ffmpeg -i "concat:$$001$$.ts|$$002$$.ts|$$003$$.ts" -c copy $$DONE-1$$.mp4
