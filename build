@@ -1,20 +1,37 @@
-#!/bin/sh
-export_ () { export $1=$2; }
+#!/usr/bin/env python3
 
-export_ PYTHONPATH  ${PWD}
-export_ out         ${PWD}/build.out
-export_ target      ${out}/eating.tmp
-export_ sh   ${out}/main.sh
-export_ py   ${PWD}/eman/generate_script.py
+from pathlib import Path
+from urllib.request import Request, urlopen
 
-mkdir -p ${out}
+from eman import INDEX, ROOT
 
-[ "$1" == "-f" ] && rm -rf ${target}
-[ -e ${target} ] && echo Remove ${target} first or use [-f]. && exit
+BUILD=ROOT/'build.out'
+BUILD.is_dir() or BUILD.mkdir()
+HEADERS = {'User-Agent': 'Mozilla/5.0'}
 
-echo BUILDING AT ${target}
-pushd ${out} > /dev/null
-${py} > ${sh}
-chmod +x ${sh}
-${sh}
-popd > /dev/null
+def lfilter(*a,**b): return list(filter(*a,**b))
+def is_url(x): return x.startswith('http')
+def fsplit(f): return f.read_text().split()
+def padint(n): return str(n+10000)[-4:]
+
+def main():
+    for index in sorted(INDEX.glob('*')):
+        download_index(index)
+
+def download_index(index):
+        name = index.name
+        build = BUILD/name
+        build.mkdir(exist_ok=True)
+        urls = lfilter(is_url,fsplit(index))
+        for ii,url in enumerate(urls):
+            dst=build/f'{name}.{padint(ii)}.mp4'
+            if not dst.exists():
+                print(dst)
+                req = Request(url, headers=HEADERS)
+                dst.write_bytes(urlopen(req).read())
+
+if __name__ == '__main__':
+    main()
+
+
+
