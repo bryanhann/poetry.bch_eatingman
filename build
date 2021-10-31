@@ -1,34 +1,31 @@
 #!/usr/bin/env python3
 
-from pathlib import Path
-from urllib.request import Request, urlopen
+import eman as EMAN
 
-from eman import INDEX, ROOT
-
-BUILD=ROOT/'build.out'
-BUILD.is_dir() or BUILD.mkdir()
-HEADERS = {'User-Agent': 'Mozilla/5.0'}
-
-def lfilter(*a,**b): return list(filter(*a,**b))
-def is_url(x): return x.startswith('http')
-def fsplit(f): return f.read_text().split()
-def padint(n): return str(n+10000)[-4:]
+BUILD=EMAN.ROOT/'build.out'
+BUILD.mkdir(exist_ok=True)
 
 def main():
-    for index in sorted(INDEX.glob('*')):
+    for index in sorted(EMAN.INDEX.glob('*')):
         download_index(index)
+        assemble_index(index)
+
 
 def download_index(index):
-        name = index.name
-        build = BUILD/name
-        build.mkdir(exist_ok=True)
-        urls = lfilter(is_url,fsplit(index))
-        for ii,url in enumerate(urls):
-            dst=build/f'{name}.{padint(ii)}.mp4'
-            if not dst.exists():
-                print(dst)
-                req = Request(url, headers=HEADERS)
-                dst.write_bytes(urlopen(req).read())
+    enum = EMAN.EnumeratedSequence( EMAN.urls4file(index) )
+    enum.cb_first = lambda e : None
+    enum.cb_next  = lambda e : EMAN.back( f'{index.name}: {e.ii()}/{e.total()}')
+    enum.cb_last  = lambda e : EMAN.back( '\n')
+    for ii,url in enum.withself():
+        iname = index.name
+        fname = f'{iname}.{EMAN.pad(ii)}.mp4'
+        dst = BUILD/iname/fname
+        EMAN.wget(url, dst)
+
+def assemble_index(index):
+    pass
+
+
 
 if __name__ == '__main__':
     main()

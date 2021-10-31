@@ -7,6 +7,7 @@ authors = ["Bryan Hann <nobody@nowhere>"]
 [tool.poetry.dependencies]
 python = "^3.7"
 wget = "^3.2"
+progressbar2 = "^3.55.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"
