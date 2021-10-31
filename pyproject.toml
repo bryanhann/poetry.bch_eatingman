@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "eatingman"
+name = "eman"
 version = "0.1.0"
 description = ""
 authors = ["Bryan Hann <nobody@nowhere>"]
