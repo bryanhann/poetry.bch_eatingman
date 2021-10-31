@@ -1,32 +1,26 @@
 __version__ = '0.1.0'
-from pathlib import Path
-ROOT=Path(__file__).parent.parent
-EPISODES=ROOT/'episodes'
-INDEX=ROOT/'episodes'
+
 import sys
 from pathlib import Path
 from urllib.request import Request, urlopen
 
+ROOT=Path(__file__).parent.parent
+INDEX=ROOT/'index'
 BACKSPACE='\b'
-if 1:
-    def lfilter(*a,**b): return list(filter(*a,**b))
-    def is_url(x): return x.startswith('http')
-    def fsplit(f): return f.read_text().split()
-    def pad(n): return str(n+10000)[-4:]
-    def stderr(msg): sys.stderr.write(msg), sys.stderr.flush()
-    def back(msg): stderr( f'{BACKSPACE*50}{msg}' )
-    def urls4file(fpath): return filter(is_url, fsplit(fpath))
 
-    def wget(url,dst):
-        HEADERS = {'User-Agent': 'Mozilla/5.0'}
-        if not dst.exists():
-            (dst.parent).mkdir(exist_ok=True)
-            dst.write_bytes(urlopen(Request(url, headers=HEADERS)).read())
+def lfilter(*a,**b): return list(filter(*a,**b))
+def is_url(x): return x.startswith('http')
+def fsplit(f): return f.read_text().split()
+def pad(n): return str(n+10000)[-4:]
+def stderr(msg): sys.stderr.write(msg), sys.stderr.flush()
+def back(msg): stderr( f'{BACKSPACE*50}{msg}' )
+def urls4file(fpath): return filter(is_url, fsplit(fpath))
 
-
-
-
-
+def wget(url,dst):
+    HEADERS = {'User-Agent': 'Mozilla/5.0'}
+    if not dst.exists():
+        (dst.parent).mkdir(exist_ok=True)
+        dst.write_bytes(urlopen(Request(url, headers=HEADERS)).read())
 
 class EnumeratedSequence:
     def __init__(self,seq, text='anon'):
@@ -66,7 +60,7 @@ class EnumeratedSequence:
     def __inc       (self): self._ii += 1
     def __enter__   (self): self.cb_first(self); return self
     def __iter__    (self): return self
-    def __exit__    (self,*a): self.cb_last(self) 
+    def __exit__    (self,*a): self.cb_last(self)
 
     def __next__(self):
         if self:
